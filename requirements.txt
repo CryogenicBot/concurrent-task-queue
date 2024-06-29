@@ -1,0 +1,7 @@
+certifi==2024.6.2
+dill==0.3.8
+distlib==0.3.8
+filelock==3.15.4
+platformdirs==4.2.2
+setuptools==70.1.1
+virtualenv==20.26.3
