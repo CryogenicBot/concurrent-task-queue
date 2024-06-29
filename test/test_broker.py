@@ -56,7 +56,6 @@ class TestTaskQueue(unittest.TestCase):
         broker.add_task(task2)
         task3 = Task(fail, 1, 2)
         broker.add_task(task3)
-        task_map = broker.get_task_map()
 
         processes = broker.run_tasks()
         for p in processes:
