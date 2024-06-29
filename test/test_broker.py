@@ -49,29 +49,31 @@ class TestTaskQueue(unittest.TestCase):
         self.assertEqual(task2.task(*task2.args), queued_task2.task(*queued_task2.args))
 
     def test_When_RunTaskCalled_It_RunsTaskAndPutsItInAppropriateQueue(self): 
+        broker = Broker()
         task = Task(add, 1, 2)
-        self.broker.add_task(task)
+        broker.add_task(task)
         task2 = Task(sub, 2, 1)
-        self.broker.add_task(task2)
+        broker.add_task(task2)
         task3 = Task(fail, 1, 2)
-        self.broker.add_task(task3)
+        broker.add_task(task3)
+        task_map = broker.get_task_map()
 
-        processes = self.broker.run_tasks()
+        processes = broker.run_tasks()
         for p in processes:
             p.join()
 
-
-        self.assertEqual(self.broker.failed_queue.qsize(), 1)
-        self.assertEqual(self.broker.success_queue.qsize(), 2)
+        self.assertEqual(broker.failed_queue.qsize(), 1)
+        self.assertEqual(broker.success_queue.qsize(), 2)
         
-        task_map = self.broker.get_task_map()
-        finished_task = dill.loads(task_map[task.hash_key()])
-        finished_task2 = dill.loads(task_map[task2.hash_key()])
-        finished_task3 = dill.loads(task_map[task3.hash_key()])   
+        failed_task = dill.loads(broker.failed_queue.get())
+        successful_task1 = dill.loads(broker.success_queue.get())
+        successful_task2 = dill.loads(broker.success_queue.get())
 
-        # self.assertEqual(finished_task.status, TaskStatus.SUCCESS)
-        # self.assertEqual(finished_task2.status, TaskStatus.SUCCESS)
-        # self.assertEqual(finished_task3.status, TaskStatus.FAILED)
+        self.assertEqual(failed_task.status, TaskStatus.FAILED)
+        self.assertEqual(successful_task1.status, TaskStatus.SUCCESS)
+        self.assertEqual(successful_task1.return_value, 3)
+        self.assertEqual(successful_task2.status, TaskStatus.SUCCESS)
+        self.assertEqual(successful_task2.return_value, 1)
 
 
 def add(a, b):

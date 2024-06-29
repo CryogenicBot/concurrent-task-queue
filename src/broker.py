@@ -24,22 +24,20 @@ class Broker:
         return dill.loads(self.queue.get())
 
     def run_task(self, task: Task) -> Process:
-        def run(t: Task):
-            t.run()
+        def run():
+            task.run()
 
-            print(t.status)
-            pickled_task = t.pickle()
-            if t.status == TaskStatus.SUCCESS:
+            pickled_task = task.pickle()
+            if task.status == TaskStatus.SUCCESS:
                 self.success_queue.put(pickled_task)
-            elif t.status == TaskStatus.FAILED:
+            elif task.status == TaskStatus.FAILED:
                 self.failed_queue.put(pickled_task)
             else:
                 raise Exception("Task reported an unknown status.")
 
-            self.task_map.update({t.hash_key(): pickled_task})
-            print(dill.loads(self.task_map[t.hash_key()]).status)
+            self.task_map[task.hash_key()] = pickled_task
 
-        process = Process(target=run, args=(task,))
+        process = Process(target=run, args=())
         process.start()
 
         return process

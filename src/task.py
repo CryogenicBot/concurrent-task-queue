@@ -13,7 +13,7 @@ class TaskStatus(Enum):
 class Task:
 
     def __init__(self, task: callable, *args):
-        self.task = task
+        self.task: callable = task
         self.args = args
         self.status = TaskStatus.QUEUED
         self.return_value: any | None = None
