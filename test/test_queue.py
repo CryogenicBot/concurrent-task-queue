@@ -1,5 +1,5 @@
 import unittest
-from src.task_queue import Task, Broker, TaskStatus
+from src.broker import Task, Broker, TaskStatus
 import dill
 
 class TestTask(unittest.TestCase):
