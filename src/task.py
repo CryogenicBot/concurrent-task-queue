@@ -16,16 +16,16 @@ class Task:
         self.task = task
         self.args = args
         self.status = TaskStatus.QUEUED
+        self.return_value: any | None = None
 
-    def run(self) -> TaskStatus:
+    def run(self):
         self.status = TaskStatus.RUNNING
         try:
-            self.task(*self.args)
+            self.return_value = self.task(*self.args)
             self.status = TaskStatus.SUCCESS
         except Exception as e:
             self.status = TaskStatus.FAILED
 
-        return self.status
 
     def pickle(self) -> bytes:
         return dill.dumps(self)

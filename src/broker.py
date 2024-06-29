@@ -10,6 +10,9 @@ class Broker:
         self.success_queue = self.manager.Queue()
         self.task_map = self.manager.dict()
 
+    def get_task_map(self):
+        return self.task_map
+
     def add_task(self, task: Task):
         pickled_task = task.pickle()
         self.queue.put(pickled_task)
@@ -20,14 +23,34 @@ class Broker:
             return None
         return dill.loads(self.queue.get())
 
-    def run_task(self, task: Task):
-        task_status = task.run()
+    def run_task(self, task: Task) -> Process:
+        def run(t: Task):
+            t.run()
+
+            print(t.status)
+            pickled_task = t.pickle()
+            if t.status == TaskStatus.SUCCESS:
+                self.success_queue.put(pickled_task)
+            elif t.status == TaskStatus.FAILED:
+                self.failed_queue.put(pickled_task)
+            else:
+                raise Exception("Task reported an unknown status.")
+
+            self.task_map.update({t.hash_key(): pickled_task})
+            print(dill.loads(self.task_map[t.hash_key()]).status)
+
+        process = Process(target=run, args=(task,))
+        process.start()
+
+        return process
+
+    def run_tasks(self):
+        processes = []
+        while not self.queue.empty():
+            task = self.get_task()
+            processes.append(self.run_task(task))
+
+        return processes
         
-        if task_status == TaskStatus.SUCCESS:
-            self.success_queue.put(task)
-        elif task_status == TaskStatus.FAILED:
-            self.failed_queue.put(task)
-        else:
-            raise Exception("Task reported an unknown status.")
         
 
