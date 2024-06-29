@@ -38,4 +38,4 @@ python -m test.test_task # task tests
 
 # Problems and Future Improvements
 1. The queueing and dequeueing of the task causes the hash key to change, resulting in the task map containing copies of the task rather than updating the original entry. I ran out of time before I could fully investigate the issue
-2. I would like to use pipes in order to have child processes communicate the execution of a task, and its end result
+2. I would like to use pipes in order to have child processes communicate the execution of a task, and its end result. This would then become the basis of updating queues and task status.
