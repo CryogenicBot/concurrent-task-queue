@@ -1,5 +1,5 @@
 import unittest
-from src.broker import Task, Broker
+from src.broker import Task 
 from pickle import loads
 class TestTask(unittest.TestCase):
 

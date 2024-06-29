@@ -1,4 +1,4 @@
-from multiprocessing import Process, Queue, Manager
+from multiprocessing import Process, Manager
 from .task import Task, TaskStatus
 import dill
 

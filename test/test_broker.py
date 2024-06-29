@@ -2,7 +2,6 @@
 import unittest
 from src.broker import Task, Broker, TaskStatus
 import dill
-import time
 
 class TestTaskQueue(unittest.TestCase):
     def setUp(self):
